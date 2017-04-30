@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myGPA">
+<head>
+  <meta charset="UTF-8">
+  <title>MyGPA</title>
+  <link rel="stylesheet" href="./stylesheets/style.css"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+  <script src="./js/main.js"></script>
+  <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+</head>
+<body ng-controller="mainController">
+<div class="mdl-layout mdl-js-layout">
+  <header class="mdl-layout__header">
+    <div class="mdl-layout-icon"></div>
+    <div class="mdl-layout__header-row">
+      <span class="mdl-layout__title">GPA : {{calc.gpa}} ({{calc.band}}) - Credits at E : {{calc.creditE.length}}</span>
+      <div class="mdl-layout-spacer"></div>
+      <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--accent" ng-click="saveChanges()">
+        <i class="material-icons">save</i>
+      </button>
+      <span class="mdl-layout__title"></span>
+    </div>
+
+  </header>
+  <main class="mdl-layout__content">
+    <div class="mdl-grid">
+      <div class="mdl-cell--6-col">
+        <table class="mdl-data-table mdl-js-data-table">
+          <thead>
+          <tr>
+            <th class="mdl-data-table__cell--non-numeric">Name</th>
+            <th>Credits</th>
+            <th>GPA</th>
+            <th>Band</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="module in modules">
+            <td class="mdl-data-table__cell--non-numeric">
+              <button class="mdl-button mdl-js-button mdl-button--icon" ng-click="selectModule(module)">
+                <i class="material-icons">create</i>
+              </button>
+              {{module.name}}
+            </td>
+            <td>{{10 * module.weight}}</td>
+            <td>{{module.gpa}}</td>
+            <td>{{module.band}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mdl-cell--6-col">
+        <div class="card-wide mdl-card mdl-shadow--4dp" ng-if="selects.module">
+          <div class="mdl-card__title">
+            <h4 class="mdl-card__title-text">{{selects.module.name}}</h4>
+          </div>
+          <div class="mdl-card__supporting-text">
+            <h4>GPA : {{selects.module.gpa}}</h4>
+          </div>
+          <div class="mdl-card__supporting-text">
+            <h4>Components</h4>
+            <table class="mdl-data-table mdl-js-data-table">
+              <thead>
+              <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th>Weight</th>
+                <th>GPA</th>
+                <th>Band</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="component in selects.module.components">
+                <td class="mdl-data-table__cell--non-numeric">
+                  <button class="mdl-button mdl-js-button mdl-button--icon"
+                          ng-click="showModifyComponentForm(component)">
+                    <i class="material-icons">create</i>
+                  </button>
+                  {{component.name}}
+                </td>
+                <td>{{component.weight}}</td>
+                <td>{{component.gpa}}</td>
+                <td>{{component.band}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 'Add a component' form -->
+          <div class="mdl-card__supporting-text" ng-if="selects.showAddComponent">
+            <h4>New component</h4>
+            <form>
+
+              <!-- 'Name' textfield -->
+              <div class="mdl-textfield mdl-js-textfield">
+                <input class="mdl-textfield__input" type="text" id="name" ng-model="inputs.component.name">
+                <label class="mdl-textfield__label" for="name"></label>
+              </div>
+
+              <!-- 'Weight' textfield -->
+              <div class="mdl-textfield mdl-js-textfield">
+                <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="weight"
+                       ng-model="inputs.component.weight">
+                <label class="mdl-textfield__label" for="weight"></label>
+                <span class="mdl-textfield__error">Input is not a number!</span>
+              </div>
+
+              <!-- Slider with Starting Value -->
+              <input type="range"
+                     min="0" max="22" value="{{inputs.component.gpa}}"
+                     tabindex="0" id="gpa" ng-model="inputs.component.gpa">{{inputs.component.gpa}}
+              <div class="mdl-textfield mdl-js-textfield">
+                <span>{{inputs.component.band}}</span>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" id="sample3">
+                <label class="mdl-textfield__label" for="sample3">Text...</label>
+              </div>
+
+              <!-- 'Ok' button -->
+              <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored"
+                      ng-click="doneAdd()">
+                <i class="material-icons">done</i>
+              </button>
+            </form>
+          </div>
+
+          <!-- 'Modify a component' form -->
+          <div class="mdl-card__supporting-text" ng-if="selects.showModifyComponent">
+            <h4>{{inputs.modifyComponent.name}}</h4>
+            <form>
+
+              <!-- 'Name' textfield -->
+              <div class="mdl-textfield mdl-js-textfield">
+                <input class="mdl-textfield__input" type="text" id="modify-name" ng-model="inputs.modifyComponent.name">
+                <label class="mdl-textfield__label" for="modify-name">Hello</label>
+              </div>
+
+              <!-- 'Weight' textfield -->
+              <div class="mdl-textfield mdl-js-textfield">
+                <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="modify-weight"
+                       ng-model="inputs.modifyComponent.weight">
+                <label class="mdl-textfield__label" for="modify-weight"></label>
+                <span class="mdl-textfield__error">Input is not a number!</span>
+              </div>
+
+              <!-- Slider with Starting Value -->
+              <input type="range"
+                     min="0" max="22" value="{{inputs.modifyComponent.gpa}}"
+                     tabindex="0" id="modifyGpa" ng-model="inputs.modifyComponent.gpa">{{inputs.modifyComponent.gpa}}
+              <div class="mdl-textfield mdl-js-textfield">
+                <span>{{inputs.modifyComponent.band}}</span>
+              </div>
+
+              <!-- 'Ok' button -->
+              <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored"
+                      ng-click="doneModify()">
+                <i class="material-icons">done</i>
+              </button>
+            </form>
+          </div>
+          <div class="mdl-card__actions mdl-card--border">
+            <button class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-button--colored"
+                    ng-click="showAddComponentForm()">
+              <i class="material-icons">add</i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

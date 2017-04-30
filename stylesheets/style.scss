@@ -1,0 +1,11 @@
+//Import bootstrap 
+@import './../node_modules/material-design-lite/src/material-design-lite.scss';
+@import './../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
+
+.card-wide.mdl-card {
+  width: 512px;
+}
+
+.card-fullpage.mdl-card {
+  width: 100%;
+}
